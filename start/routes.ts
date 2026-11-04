@@ -35,3 +35,9 @@ router
       .use(middleware.auth())
   })
   .prefix('/api/v1')
+// Route de test
+router.get('test', async () => {
+  return 'API is working!'
+})
+
+router.resource('students', controllers.Students).apiOnly()
