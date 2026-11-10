@@ -1,0 +1,22 @@
+info:
+  name: Modify a student
+  type: http
+  seq: 1
+
+http:
+  method: PUT
+  url: http://localhost:3333/students/2
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Paul",
+        "firstname": "ochon"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

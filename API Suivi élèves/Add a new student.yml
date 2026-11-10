@@ -1,0 +1,22 @@
+info:
+  name: Add a new student
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:3333/students
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Dupont",
+        "firstname": "Jean"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
