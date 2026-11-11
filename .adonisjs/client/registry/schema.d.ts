@@ -77,13 +77,13 @@ export interface Registry {
     methods: ["POST"]
     pattern: '/students'
     types: {
-      body: {}
+      body: ExtractBody<InferInput<(typeof import('#validators/student').studentValidator)>>
       paramsTuple: []
       params: {}
-      query: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/student').studentValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/students_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/students_controller').default['store']>>>
-      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/students_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/students_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/students_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'students.show': {
@@ -103,13 +103,13 @@ export interface Registry {
     methods: ["PUT","PATCH"]
     pattern: '/students/:id'
     types: {
-      body: {}
+      body: ExtractBody<InferInput<(typeof import('#validators/student').studentValidator)>>
       paramsTuple: [ParamValue]
       params: { id: ParamValue }
-      query: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/student').studentValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/students_controller').default['update']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/students_controller').default['update']>>>
-      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/students_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/students_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/students_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'students.destroy': {

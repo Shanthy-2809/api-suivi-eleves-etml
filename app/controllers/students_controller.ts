@@ -1,5 +1,6 @@
 import Student from '#models/student'
 import type { HttpContext } from '@adonisjs/core/http'
+import { studentValidator } from '#validators/student'
 
 export default class StudentsController {
   async index({ response }: HttpContext) {
@@ -8,11 +9,15 @@ export default class StudentsController {
     return response.ok(students)
   }
 
+  /**
+   * Ajouter un élève
+   */
   async store({ request, response }: HttpContext) {
-    const data = request.only(['name', 'firstname'])
-
-    const student = await Student.create(data)
-
+    // Récupération des données envoyées par le client et validation des données
+    const { name, firstname } = await request.validateUsing(studentValidator)
+    // Création d'un nouvel élève avec les données validées
+    const student = await Student.create({ name, firstname })
+    // On utilise `response.created` pour retourner un code HTTP 201 avec les données de l'élève créé
     return response.created(student)
   }
 
@@ -30,14 +35,19 @@ export default class StudentsController {
    * - ou une modification partielle (PATCH)
    */
   async update({ params, request, response }: HttpContext) {
-    const data = request.only(['name', 'firstname'])
+    // Récupération et validation des données
+    const { name, firstname } = await request.validateUsing(studentValidator)
 
+    // Recherche de l'élève à modifier
     const student = await Student.findOrFail(params.id)
 
-    student.merge(data)
+    // Modification des données
+    student.merge({ name, firstname })
 
+    // Sauvegarde des modifications
     await student.save()
 
+    // Retourne l'élève modifié avec le statut 200
     return response.ok(student)
   }
 
