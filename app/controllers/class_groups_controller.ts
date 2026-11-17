@@ -7,7 +7,7 @@ export default class ClassGroupsController {
    * Récupérer toutes les classes
    */
   async index({ response }: HttpContext) {
-    const classGroups = await ClassGroup.query().orderBy('name')
+    const classGroups = await ClassGroup.query().preload('teacher').orderBy('name', 'asc')
 
     return response.ok(classGroups)
   }
@@ -22,12 +22,16 @@ export default class ClassGroupsController {
   }
 
   /**
-   * Ajouter une classe
+   * Créer une nouvelle classe
    */
   async store({ request, response }: HttpContext) {
-    const data = await request.validateUsing(classGroupValidator)
+    // Récupération des données envoyées par le client et validation des données
+    const { name, teacherId } = await request.validateUsing(classGroupValidator)
+    // Création d'une nouvelle classe avec les données validées
 
-    const classGroup = await ClassGroup.create(data)
+    const classGroup = await ClassGroup.create({ name, teacherId })
+
+    // On utilise `response.created` pour retourner un code HTTP 201 avec les données de la classecréée
 
     return response.created(classGroup)
   }

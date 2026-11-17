@@ -4,7 +4,10 @@ import { studentValidator } from '#validators/student'
 
 export default class StudentsController {
   async index({ response }: HttpContext) {
-    const students = await Student.query().orderBy('name').orderBy('firstname')
+    const students = await Student.query()
+      .preload('classGroup')
+      .orderBy('name')
+      .orderBy('firstname')
 
     return response.ok(students)
   }
@@ -12,17 +15,23 @@ export default class StudentsController {
   /**
    * Ajouter un élève
    */
+
   async store({ request, response }: HttpContext) {
-    // Récupération des données envoyées par le client et validation des données
-    const { name, firstname } = await request.validateUsing(studentValidator)
-    // Création d'un nouvel élève avec les données validées
-    const student = await Student.create({ name, firstname })
-    // On utilise `response.created` pour retourner un code HTTP 201 avec les données de l'élève créé
+    // Validation des données
+    const { name, firstname, classGroupId } = await request.validateUsing(studentValidator)
+
+    // Création de l'élève
+    const student = await Student.create({
+      name,
+      firstname,
+      classGroupId,
+    })
+
     return response.created(student)
   }
 
   async show({ params, response }: HttpContext) {
-    const student = await Student.findOrFail(params.id)
+    const student = await Student.query().preload('classGroup').where('id', params.id).firstOrFail()
 
     return response.ok(student)
   }

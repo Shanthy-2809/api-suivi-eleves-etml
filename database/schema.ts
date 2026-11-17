@@ -8,18 +8,7 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
 export class AuthAccessTokenSchema extends BaseModel {
-  static $columns = [
-    'abilities',
-    'createdAt',
-    'expiresAt',
-    'hash',
-    'id',
-    'lastUsedAt',
-    'name',
-    'tokenableId',
-    'type',
-    'updatedAt',
-  ] as const
+  static $columns = ['abilities', 'createdAt', 'expiresAt', 'hash', 'id', 'lastUsedAt', 'name', 'tokenableId', 'type', 'updatedAt'] as const
   $columns = AuthAccessTokenSchema.$columns
   @column()
   declare abilities: string
@@ -43,11 +32,45 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
-export class StudentSchema extends BaseModel {
-  static $columns = ['createdAt', 'firstname', 'id', 'name', 'updatedAt'] as const
-  $columns = StudentSchema.$columns
+export class ClassGroupSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'name', 'teacherId', 'updatedAt'] as const
+  $columns = ClassGroupSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare name: string
+  @column()
+  declare teacherId: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class StudentSchema extends BaseModel {
+  static $columns = ['classGroupId', 'createdAt', 'firstname', 'id', 'name', 'updatedAt'] as const
+  $columns = StudentSchema.$columns
+  @column()
+  declare classGroupId: number | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare firstname: string
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare name: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class TeacherSchema extends BaseModel {
+  static $columns = ['createdAt', 'email', 'firstname', 'id', 'name', 'updatedAt'] as const
+  $columns = TeacherSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare email: string
   @column()
   declare firstname: string
   @column({ isPrimary: true })
