@@ -5,7 +5,13 @@ info:
 
 http:
   method: POST
-  url: http://localhost:3333/students
+  url: http://localhost:3333/students/1/comments
+  body:
+    type: json
+    data: |-
+      {
+        "content": "Jean a fait de très bons progrès cette semaine."
+      }
   auth: inherit
 
 settings:

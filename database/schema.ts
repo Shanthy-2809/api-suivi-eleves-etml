@@ -47,6 +47,23 @@ export class ClassGroupSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class CommentSchema extends BaseModel {
+  static $columns = ['content', 'createdAt', 'id', 'studentId', 'teacherId', 'updatedAt'] as const
+  $columns = CommentSchema.$columns
+  @column()
+  declare content: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare studentId: number
+  @column()
+  declare teacherId: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class StudentSchema extends BaseModel {
   static $columns = ['classGroupId', 'createdAt', 'firstname', 'id', 'name', 'updatedAt'] as const
   $columns = StudentSchema.$columns

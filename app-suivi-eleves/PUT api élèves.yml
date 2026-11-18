@@ -5,13 +5,12 @@ info:
 
 http:
   method: PUT
-  url: http://localhost:3333/students/5
+  url: http://localhost:3333/students/1/comments/3
   body:
     type: json
     data: |-
       {
-        "name": "David",
-        "firstname": "Jean"
+        "content": "Jean a fait des progrès exceptionnels cette semaine."
       }
   auth: inherit
 

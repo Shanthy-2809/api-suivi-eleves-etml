@@ -41,5 +41,10 @@ router.get('test', async () => {
 })
 
 router.resource('students', controllers.Students).apiOnly()
+// Routes imbriquées sur les commentaires
+// pour le CRUD /students/:student_id/comments
+router.resource('students.comments', controllers.Comments).apiOnly()
+// Routes pour le CRUD /teachers
 router.resource('teachers', controllers.Teachers).apiOnly()
+// Routes pour le CRUD /classGroups
 router.resource('classGroups', controllers.ClassGroups).apiOnly()
