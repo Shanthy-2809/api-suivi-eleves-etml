@@ -1,0 +1,27 @@
+info:
+  name: 05 Ajout enseignant
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: http://localhost:3333/api/teachers
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Dupont",
+        "firstname": "Marie",
+        "email": "marie.dupont@example.test",
+        "userId": 1
+      }
+  auth: inherit
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

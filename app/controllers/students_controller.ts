@@ -1,72 +1,59 @@
 import Student from '#models/student'
 import type { HttpContext } from '@adonisjs/core/http'
-import { studentValidator } from '#validators/student'
+import { studentValidator, getStudentsQueryValidator } from '#validators/student'
 
 export default class StudentsController {
-  async index({ response }: HttpContext) {
-    const students = await Student.query()
-      .preload('classGroup')
-      .orderBy('name')
-      .orderBy('firstname')
+  /** GET /api/students: search, filter, sort, paginate. */
+  async index({ response, request }: HttpContext) {
+    const {
+      page = 1,
+      limit = 10,
+      sort = 'name',
+      order = 'asc',
+      classGroupId,
+      search,
+    } = await request.validateUsing(getStudentsQueryValidator)
 
+    const query = Student.query().preload('classGroup').preload('comments')
+    if (classGroupId !== undefined) {
+      query.where('class_group_id', classGroupId)
+    }
+    if (search) {
+      // MySQL: LIKE (not ILIKE, which is PostgreSQL-specific).
+      query.where((subQuery) => {
+        subQuery.where('name', 'like', `%${search}%`)
+          .orWhere('firstname', 'like', `%${search}%`)
+      })
+    }
+    query.orderBy(sort, order).orderBy('id', 'asc')
+    const students = await query.paginate(page, limit)
+    students.baseUrl('/api/students')
+    students.queryString({ page, limit, sort, order, ...(classGroupId !== undefined ? { classGroupId } : {}), ...(search ? { search } : {}) })
     return response.ok(students)
   }
 
-  /**
-   * Ajouter un élève
-   */
+  async show({ params, response }: HttpContext) {
+    const student = await Student.query().preload('classGroup').preload('comments').where('id', params.id).firstOrFail()
+    return response.ok(student)
+  }
 
   async store({ request, response }: HttpContext) {
-    // Validation des données
     const { name, firstname, classGroupId } = await request.validateUsing(studentValidator)
-
-    // Création de l'élève
-    const student = await Student.create({
-      name,
-      firstname,
-      classGroupId,
-    })
-
+    const student = await Student.create({ name, firstname, classGroupId: classGroupId ?? null })
     return response.created(student)
   }
 
-  async show({ params, response }: HttpContext) {
-    const student = await Student.query().preload('classGroup').where('id', params.id).firstOrFail()
-
-    return response.ok(student)
-  }
-
-  /**
-   * Mettre à jour un élève
-   *
-   * Cette méthode est utilisée pour mettre à jour les informations d'un élève que ce soit :
-   * - pour une modification complète (PUT)
-   * - ou une modification partielle (PATCH)
-   */
   async update({ params, request, response }: HttpContext) {
-    // Récupération et validation des données
-    const { name, firstname } = await request.validateUsing(studentValidator)
-
-    // Recherche de l'élève à modifier
+    const data = await request.validateUsing(studentValidator)
     const student = await Student.findOrFail(params.id)
-
-    // Modification des données
-    student.merge({ name, firstname })
-
-    // Sauvegarde des modifications
+    student.merge(data)
     await student.save()
-
-    // Retourne l'élève modifié avec le statut 200
     return response.ok(student)
   }
 
-  /**
-   * Supprimer un élève
-   */
   async destroy({ params, response }: HttpContext) {
     const student = await Student.findOrFail(params.id)
     await student.delete()
-
     return response.noContent()
   }
 }
